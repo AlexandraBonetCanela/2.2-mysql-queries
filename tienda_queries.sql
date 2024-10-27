@@ -1,8 +1,6 @@
 # NOTES
-# precio is as eur price
-# Review 24, 25
-# Queries 28, 29??
-# Review 37
+# We consider precio as euro currency
+
 
 USE tienda;
 # 1. Llista el nom de tots els productes que hi ha en la taula producto.
@@ -13,14 +11,13 @@ USE tienda;
 
 # 3. Llista totes les columnes de la taula producto.
     SELECT * FROM producto;
-    DESCRIBE producto;
 
 # 4. Llista el nom dels productes, el preu en euros i el preu en dòlars estatunidencs (USD).
-    SELECT precio AS eur_price, precio * 1.08 AS usd_price FROM producto;
+    SELECT precio AS precio_euros, ROUND(precio * 1.08, 2) AS precio_dollars FROM producto;
 
 # 5. Llista el nom dels productes, el preu en euros i el preu en dòlars estatunidencs (USD).
 # Utilitza els següents àlies per a les columnes: nom de producto, euros, dòlars.
-    SELECT nombre as 'name of product', precio AS euros, precio * 1.08 AS dolars FROM producto;
+    SELECT nombre, precio AS precio_euros, ROUND(precio * 1.08, 2) AS precio_dollars FROM producto;
 
 # 6. Llista els noms i els preus de tots els productes de la taula producto, convertint els noms a majúscula.
     SELECT UPPER(nombre), precio FROM producto;
@@ -30,7 +27,7 @@ USE tienda;
 
 # 8. Llista el nom de tots els fabricants en una columna, i en una altra columna obtingui en majúscules els dos primers caràcters
 #  del nom del fabricant.
-    SELECT nombre, UPPER(SUBSTR(nombre, 1, 2)) FROM fabricante;
+    SELECT nombre, UPPER(SUBSTR(nombre, 1, 2)) AS siglas FROM fabricante;
 
 # 9. Llista els noms i els preus de tots els productes de la taula producto, arrodonint el valor del preu.
     SELECT nombre, ROUND(precio) FROM producto;
@@ -52,6 +49,7 @@ USE tienda;
 # 13. Llista els noms dels fabricants ordenats de manera ascendent.
     SELECT nombre FROM fabricante
     ORDER BY nombre ASC ;
+
 # 14. Llista els noms dels fabricants ordenats de manera descendent.
     SELECT nombre FROM fabricante
     ORDER BY nombre DESC;
@@ -68,8 +66,7 @@ USE tienda;
 # 17. Retorna una llista amb 2 files a partir de la quarta fila de la taula fabricante.
 # La quarta fila també s'ha d'incloure en la resposta.
     SELECT * FROM fabricante
-    WHERE codigo > 3
-    LIMIT 2;
+    LIMIT 2 OFFSET 3;
 
 # 18. Llista el nom i el preu del producte més barat. (Utilitza solament les clàusules ORDER BY i LIMIT).
 # NOTA: Aquí no podria usar MIN(preu), necessitaria GROUP BY.
@@ -88,14 +85,14 @@ USE tienda;
     WHERE codigo_fabricante = 2;
 
 # 21. Retorna una llista amb el nom del producte, preu i nom de fabricant de tots els productes de la base de dades.
-    SELECT p.nombre, p.precio, f.nombre
+    SELECT p.nombre AS nombre_producto, p.precio, f.nombre AS nombre_fabricante
     FROM producto p
     INNER JOIN fabricante f
     ON p.codigo_fabricante = f.codigo;
 
 # 22. Retorna una llista amb el nom del producte, preu i nom de fabricant de tots els productes de la base de dades.
 # Ordena el resultat pel nom del fabricant, per ordre alfabètic.
-    SELECT p.nombre, p.precio, f.nombre
+    SELECT p.nombre AS nombre_producto, p.precio, f.nombre AS nombre_fabricante
     FROM producto p
     INNER JOIN fabricante f
     ON p.codigo_fabricante = f.codigo
@@ -103,17 +100,23 @@ USE tienda;
 
 # 23. Retorna una llista amb el codi del producte, nom del producte, codi del fabricador i nom del fabricador,
 # de tots els productes de la base de dades.
-    SELECT p.codigo, p.nombre, p.codigo_fabricante, f.nombre FROM producto p
+    SELECT p.codigo AS codigo_producto, p.nombre AS nombre_producto, p.codigo_fabricante AS codigo_fabricante, f.nombre AS nombre_fabricante FROM producto p
     INNER JOIN fabricante f
     ON p.codigo_fabricante = f.codigo;
 
 # 24. Retorna el nom del producte, el seu preu i el nom del seu fabricant, del producte més barat.
-    SELECT p.nombre, MIN(p.precio), f.nombre FROM producto p
+    SELECT p.nombre AS nombre_producto, p.precio, f.nombre AS nombre_fabricante FROM producto p
     INNER JOIN fabricante f
     ON p.codigo_fabricante = f.codigo
-    ;
-# 25. Retorna el nom del producte, el seu preu i el nom del seu fabricant, del producte més car.
+    ORDER BY p.precio ASC
+    LIMIT 1;
 
+# 25. Retorna el nom del producte, el seu preu i el nom del seu fabricant, del producte més car.
+   SELECT p.nombre AS nombre_producto, p.precio, f.nombre AS nombre_fabricante FROM producto p
+    INNER JOIN fabricante f
+    ON p.codigo_fabricante = f.codigo
+    ORDER BY p.precio DESC
+    LIMIT 1;
 
 # 26. Retorna una llista de tots els productes del fabricant Lenovo.
     SELECT p.*, f.nombre FROM producto p
@@ -128,28 +131,33 @@ USE tienda;
     WHERE f.nombre = 'Crucial' AND p.precio > 200;
 
 # 28. Retorna un llistat amb tots els productes dels fabricants Asus, Hewlett-Packardy Seagate. Sense utilitzar l'operador IN.
-
-
-# 29. Retorna un llistat amb tots els productes dels fabricants Asus, Hewlett-Packardy Seagate. Fent servir l'operador IN.
-   SELECT p.* FROM producto p
+    SELECT p.*, f.nombre FROM producto p
     INNER JOIN fabricante f
     ON p.codigo_fabricante = f.codigo
-   WHERE  f.nombre IN (('Asus', 'Hewlett-Packardy', 'Seagate'));
+    WHERE f.nombre = 'Asus'
+        OR f.nombre = 'Hewlett-Packardy'
+        OR f.nombre = 'Seagate';
+
+# 29. Retorna un llistat amb tots els productes dels fabricants Asus, Hewlett-Packardy Seagate. Fent servir l'operador IN.
+   SELECT p.*, f.nombre FROM producto p
+    INNER JOIN fabricante f
+    ON p.codigo_fabricante = f.codigo
+   WHERE  f.nombre IN ('Asus', 'Hewlett-Packardy', 'Seagate');
 
      SELECT * FROM producto
     WHERE codigo_fabricante IN
         (SELECT codigo FROM fabricante
-         WHERE nombre IN ('Asus', 'Hewlett-Packardy', 'Seagate'));
+         WHERE nombre IN ('Asus', 'Hewlett-Packardy', 'Seagate')) ;
 
 # 30. Retorna un llistat amb el nom i el preu de tots els productes dels fabricants el nom dels quals acabi per la vocal e.
-    SELECT p.nombre, p.precio FROM fabricante f
+    SELECT p.nombre, p.precio, f.nombre FROM fabricante f
     INNER JOIN producto p
     ON f.codigo = p.codigo_fabricante
     WHERE RIGHT(f.nombre,1) = 'e';
 
 
 # 31. Retorna un llistat amb el nom i el preu de tots els productes el nom de fabricant dels quals contingui el caràcter w en el seu nom.
-    SELECT p.nombre, p.precio FROM producto p
+    SELECT p.nombre, p.precio, f.nombre FROM producto p
     INNER JOIN fabricante f
     ON p.codigo_fabricante = f.codigo
     WHERE f.nombre like '%w%';
@@ -184,19 +192,14 @@ USE tienda;
     SELECT p.* FROM fabricante f
     LEFT JOIN producto p
     ON f.codigo = p.codigo_fabricante
-    WHERE f.nombre = 'Lenovo' AND p.codigo IS NOT NULL;
-
-    SELECT * FROM producto
-    WHERE codigo_fabricante IN (SELECT codigo
-                                FROM fabricante
-                                WHERE nombre = 'Lenovo');
+    WHERE f.nombre = 'Lenovo';
 
 # 37. Retorna totes les dades dels productes que tenen el mateix preu que el producte més car del fabricant Lenovo. (Sense usar INNER JOIN).
     SELECT * FROM producto
     WHERE precio = (SELECT MAX(p.precio) FROM fabricante f
                     LEFT JOIN producto p
                     ON f.codigo = p.codigo_fabricante
-                    WHERE f.nombre = 'Lenovo' AND p.codigo IS NOT NULL);
+                    WHERE f.nombre = 'Lenovo');
 
 # 38. Llista el nom del producte més car del fabricant Lenovo.
     SELECT p.nombre FROM fabricante f
@@ -217,9 +220,9 @@ USE tienda;
 # 40. Retorna tots els productes de la base de dades que tenen un preu major o igual al producte més car del fabricant Lenovo.
         SELECT * FROM producto
     WHERE precio >= (SELECT MAX(p.precio) FROM fabricante f
-                    LEFT JOIN producto p
+                    INNER JOIN producto p
                     ON f.codigo = p.codigo_fabricante
-                    WHERE f.nombre = 'Lenovo' AND p.codigo IS NOT NULL);
+                    WHERE f.nombre = 'Lenovo');
 
 # 41. Llesta tots els productes del fabricant Asus que tenen un preu superior al preu mitjà de tots els seus productes.
      SELECT * FROM producto
