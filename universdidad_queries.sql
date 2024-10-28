@@ -89,7 +89,7 @@ USE universidad;
 # El llistat ha de retornar quatre columnes, nom del departament, primer cognom, segon cognom i nom del professor/a.
 # El resultat estarà ordenat alfabèticament de menor a major pel nom del departament, cognoms i el nom.
 
-    SELECT d.nombre, p.apellido1, p.apellido2, p.nombre FROM persona p
+    SELECT d.nombre as nombre_departamento, p.apellido1, p.apellido2, p.nombre FROM persona p
              LEFT JOIN profesor pr
              ON p.id = pr.id_profesor
              LEFT JOIN departamento d
@@ -102,7 +102,8 @@ USE universidad;
    SELECT p.* FROM persona p
             LEFT JOIN profesor pr
             ON p.id = pr.id_profesor
-   WHERE p.tipo = 'profesor';
+   WHERE p.tipo = 'profesor' and pr.id_profesor IS NULL);
+
 
 # 3.Retorna un llistat amb els departaments que no tenen professors/es associats.
 
@@ -113,10 +114,10 @@ USE universidad;
 
 # 4.Retorna un llistat amb els professors/es que no imparteixen cap assignatura.
 
-    SELECT  p.apellido1, p.apellido2, p.nombre FROM persona p
+    SELECT * FROM persona p
     LEFT JOIN asignatura a
     ON p.id = a.id_profesor
-    WHERE p.tipo = 'profesor' AND a.id_profesor IS NULL;
+    WHERE p.tipo = 'profesor' AND a.id IS NULL;
 
 # 5.Retorna un llistat amb les assignatures que no tenen un professor/a assignat.
 
@@ -125,7 +126,13 @@ USE universidad;
 
 # 6.Retorna un llistat amb tots els departaments que no han impartit assignatures en cap curs escolar.
 
-    SELECT;
+    SELECT d.nombre from departamento d
+    LEFT JOIN profesor pr
+    ON d.id = pr.id_departamento
+    LEFT JOIN asignatura a
+    ON pr.id_profesor = a.id_profesor
+    WHERE a.id iS NULL
+    GROUP BY d.nombre;
 
 
 
@@ -142,8 +149,8 @@ USE universidad;
 # 3.Calcula quants professors/es hi ha en cada departament. El resultat només ha de mostrar dues columnes, una amb el nom del departament i una altra amb el nombre de professors/es que
 # hi ha en aquest departament. El resultat només ha d'incloure els departaments que tenen professors/es associats i haurà d'estar ordenat de major a menor pel nombre de professors/es.
 
-    SELECT d.nombre, COUNT(p.id_profesor) FROM profesor p
-    LEFT JOIN departamento d
+    SELECT d.nombre, COUNT(p.id_profesor) FROM departamento d
+    INNER JOIN profesor p
              ON p.id_departamento = d.id
     GROUP BY p.id_departamento
     ORDER BY COUNT(p.id_profesor) DESC;
@@ -181,7 +188,8 @@ USE universidad;
     SELECT g.nombre, a.tipo, SUM(a.creditos) FROM grado g
     LEFT JOIN asignatura a
     ON g.id = a.id_grado
-    GROUP BY g.nombre, a.tipo;
+    GROUP BY g.nombre, a.tipo
+    ORDER BY g.nombre ASC, a.tipo ASC;
 
 
 # 8.Retorna un llistat que mostri quants alumnes s'han matriculat d'alguna assignatura en cadascun dels cursos escolars. El resultat haurà de mostrar dues columnes, una columna amb
@@ -206,8 +214,8 @@ USE universidad;
 
     SELECT * FROM persona
     WHERE tipo = 'alumno'
-    GROUP BY fecha_nacimiento
-    HAVING MAX(fecha_nacimiento);
+    ORDER BY fecha_nacimiento DESC
+    LIMIT 1;
 
 # 11.Retorna un llistat amb els professors/es que tenen un departament associat i que no imparteixen cap assignatura.
 
