@@ -2,7 +2,7 @@
 
 ## Developed Using
 
-DataGrip
+MySQL, DataGrip
 
 ## Reviewed by
 Patricia Fornieles
