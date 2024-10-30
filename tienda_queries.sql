@@ -13,11 +13,11 @@ USE tienda;
     SELECT * FROM producto;
 
 # 4. Llista el nom dels productes, el preu en euros i el preu en dòlars estatunidencs (USD).
-    SELECT precio AS precio_euros, ROUND(precio * 1.08, 2) AS precio_dollars FROM producto;
+    SELECT  nombre, precio AS precio_euros, ROUND(precio * 1.08, 2) AS precio_dollars FROM producto;
 
 # 5. Llista el nom dels productes, el preu en euros i el preu en dòlars estatunidencs (USD).
 # Utilitza els següents àlies per a les columnes: nom de producto, euros, dòlars.
-    SELECT nombre, precio AS precio_euros, ROUND(precio * 1.08, 2) AS precio_dollars FROM producto;
+    SELECT nombre AS 'nombre de producto', precio AS euros, ROUND(precio * 1.08, 2) AS dollars FROM producto;
 
 # 6. Llista els noms i els preus de tots els productes de la taula producto, convertint els noms a majúscula.
     SELECT UPPER(nombre), precio FROM producto;
@@ -27,24 +27,20 @@ USE tienda;
 
 # 8. Llista el nom de tots els fabricants en una columna, i en una altra columna obtingui en majúscules els dos primers caràcters
 #  del nom del fabricant.
-    SELECT nombre, UPPER(SUBSTR(nombre, 1, 2)) AS siglas FROM fabricante;
+    SELECT nombre, CONCAT(UPPER(SUBSTR(nombre, 1, 2)), LOWER(SUBSTR(nombre, 3, LENGTH(nombre)))) FROM fabricante;
 
 # 9. Llista els noms i els preus de tots els productes de la taula producto, arrodonint el valor del preu.
-    SELECT nombre, ROUND(precio) FROM producto;
+    SELECT nombre, ROUND(precio, 0) FROM producto;
 
 # 10. Llista els noms i els preus de tots els productes de la taula producto, truncant el valor del preu per a
 # mostrar-lo sense cap xifra decimal.
     SELECT nombre, TRUNCATE(precio, 0) FROM producto;
 
 # 11. Llista el codi dels fabricants que tenen productes en la taula producto.
-    SELECT fb.codigo FROM fabricante fb
-    INNER JOIN producto p
-    ON p.codigo_fabricante = fb.codigo;
+    SELECT codigo_fabricante FROM producto;
 
 # 12. Llista el codi dels fabricants que tenen productes en la taula producto, eliminant els codis que apareixen repetits.
-    SELECT DISTINCT(fb.codigo) FROM fabricante fb
-    INNER JOIN producto p
-    ON p.codigo_fabricante = fb.codigo;
+    SELECT DISTINCT(codigo_fabricante) FROM producto;
 
 # 13. Llista els noms dels fabricants ordenats de manera ascendent.
     SELECT nombre FROM fabricante
@@ -143,11 +139,6 @@ USE tienda;
     INNER JOIN fabricante f
     ON p.codigo_fabricante = f.codigo
    WHERE  f.nombre IN ('Asus', 'Hewlett-Packardy', 'Seagate');
-
-     SELECT * FROM producto
-    WHERE codigo_fabricante IN
-        (SELECT codigo FROM fabricante
-         WHERE nombre IN ('Asus', 'Hewlett-Packardy', 'Seagate')) ;
 
 # 30. Retorna un llistat amb el nom i el preu de tots els productes dels fabricants el nom dels quals acabi per la vocal e.
     SELECT p.nombre, p.precio, f.nombre FROM fabricante f
