@@ -54,7 +54,7 @@ USE universidad;
 
 # 2.Retorna un llistat amb els professors/es que no estan associats a un departament.
 
-    SELECT p.* FROM persona p LEFT JOIN profesor pr ON p.id = pr.id_profesor WHERE p.tipo = 'profesor' and pr.id_profesor IS NULL);
+    SELECT p.* FROM persona p LEFT JOIN profesor pr ON p.id = pr.id_profesor WHERE p.tipo = 'profesor' and pr.id_profesor IS NULL;
 
 
 # 3.Retorna un llistat amb els departaments que no tenen professors/es associats.
