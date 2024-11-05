@@ -4,9 +4,6 @@
 
 MySQL, DataGrip
 
-## Reviewed by
-Patricia Fornieles
-
 ## Levels
 All (Tienda & Universidad)
 
